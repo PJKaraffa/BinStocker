@@ -24,7 +24,8 @@
 <script>
 (()=>{
  const $=id=>document.getElementById(id); let client=null,user=null,rows=[];
- const saved=JSON.parse(localStorage.getItem('binTrackerSupabase')||'{}'); if(saved.url)$('projectUrl').value=saved.url;if(saved.key)$('anonKey').value=saved.key;
+ const PROJECT_URL='https://kppkolvlqruztsupgpju.supabase.co';
+ const PUBLISHABLE_KEY='sb_publishable_rW9ZFdO5-sGz6HIAIK1jJQ_Nxvoq2OU';
  const msg=(text,type='')=>{const e=$('message');e.textContent=text;e.className='notice'+(type?' '+type:'');e.classList.remove('hidden')};
  const clearMsg=()=> $('message').classList.add('hidden');
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -42,6 +43,6 @@
  function render(){const n=Math.max(0,parseInt($('months').value||'0',10)),cutoff=cutoffMonths(n),filtered=rows.filter(r=>new Date(r.date_added+'T12:00:00')<=cutoff);$('activeCount').textContent=rows.length;$('reportCount').textContent=filtered.length;$('printSubtitle').textContent=`Records placed in bins at least ${n} month${n===1?'':'s ago'} · Printed ${new Date().toLocaleDateString()}`;const body=$('recordsBody');body.innerHTML=filtered.map(r=>`<tr><td>${esc(r.artist)}</td><td>${esc(r.title)}${r.notes?`<br><span class="muted">${esc(r.notes)}</span>`:''}</td><td>${esc(r.catalog_number||'—')}</td><td><span class="pill">${esc(r.bin_location||'Unassigned')}</span></td><td>${esc(new Date(r.date_added+'T12:00:00').toLocaleDateString())}</td><td>${ageLabel(r.date_added)}</td><td class="no-print"><button class="danger" data-remove="${esc(r.id)}">Mark removed</button></td></tr>`).join('');$('emptyState').classList.toggle('hidden',filtered.length>0);body.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>removeRow(b.dataset.remove))}
  async function removeRow(id){if(!confirm('Mark this record as removed from the bins?'))return;const {error}=await client.from('bin_inventory').update({status:'removed',removed_at:new Date().toISOString()}).eq('id',id).eq('user_id',user.id);if(error){msg('Could not update record: '+error.message,'error');return}msg('Record marked removed.','ok');loadRows()}
  $('refreshReport').onclick=render;$('months').oninput=render;$('printBtn').onclick=()=>window.print();$('dateAdded').value=new Date().toISOString().slice(0,10);
- if(saved.url&&saved.key){$('authBar').classList.add('hidden');$('loginBar').classList.remove('hidden');setClient(saved.url,saved.key)}
+ $('authBar').classList.add('hidden');setClient(PROJECT_URL,PUBLISHABLE_KEY);
 })();
 </script></body></html>
