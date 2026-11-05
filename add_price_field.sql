@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS public.bin_inventory_copies (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.bin_inventory_copies TO authenticated;
+GRANT USAGE, SELECT ON SEQUENCE public.bin_inventory_copies_copy_id_seq TO authenticated;
+
 ALTER TABLE public.bin_inventory_copies ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view own stock copies" ON public.bin_inventory_copies;
 DROP POLICY IF EXISTS "Users can add own stock copies" ON public.bin_inventory_copies;
