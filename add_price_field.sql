@@ -73,4 +73,8 @@ WHERE NOT EXISTS (
   SELECT 1 FROM public.bin_inventory_copies AS c WHERE c.stock_id = b.id
 );
 
+-- Discogs pricing lookup metadata. Safe to rerun.
+ALTER TABLE public.bin_inventory ADD COLUMN IF NOT EXISTS discogs_release_id text;
+ALTER TABLE public.bin_inventory_copies ADD COLUMN IF NOT EXISTS media_condition text;
+
 NOTIFY pgrst, 'reload schema';
